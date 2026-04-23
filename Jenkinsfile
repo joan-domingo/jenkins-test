@@ -16,7 +16,6 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'joan-domingo', usernameVariable: 'GITHUB_APP', passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
                         sh 'git config --global user.name joan-domingo'
                         sh 'git config --global user.email joands@gmail.com'
-
                         sh 'git fetch --tags'
 
                         def lastTag = sh(
