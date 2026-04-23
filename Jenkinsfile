@@ -34,8 +34,8 @@ pipeline {
                         sh "git tag -a \"${newTag}\" -m 'Release ${newTag}'"
                         sh "git push https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/joan-domingo/jenkins-test.git \"${newTag}\""
 
-                        env.PREVIOUS_VERSION_TAG = lastTag
-                        env.NEW_VERSION_TAG = newTag
+                        // env.PREVIOUS_VERSION_TAG = lastTag
+                        // env.NEW_VERSION_TAG = newTag
                     }
                 }
             }
