@@ -1,3 +1,5 @@
+import java.util.regex.Pattern
+
 pipeline {
     agent any
 
@@ -54,9 +56,11 @@ def bumpSemanticVersion(String lastTag) {
         returnStdout: true
     ).trim()
 
-    if (commits.contains('BREAKING CHANGE') || (commits =~ /(?m)^[a-z]+(\(.+\))?!:/)) {
+    def breakingPattern = Pattern.compile("(?m)^[a-z]+(\\(.+\\))?!:")
+    def featPattern = Pattern.compile("(?m)^feat(\\(.+\\))?:")
+    if (commits.contains('BREAKING CHANGE') || breakingPattern.matcher(commits).find()) {
         return "v${major + 1}.0.0"
-    } else if (commits =~ /(?m)^feat(\(.+\))?:/) {
+    } else if (featPattern.matcher(commits).find()) {
         return "v${major}.${minor + 1}.0"
     } else {
         return "v${major}.${minor}.${patch + 1}"
