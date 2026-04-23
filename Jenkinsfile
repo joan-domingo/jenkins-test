@@ -24,11 +24,16 @@ pipeline {
                             returnStdout: true
                         ).trim()
 
-                        def newTag = bumpSemanticVersion(lastTag)
+                        def commits = sh(
+                            script: "git log ${lastTag}..HEAD --no-merges --pretty=format:'%s%n%b'",
+                            returnStdout: true
+                        ).trim()
+
+                        def newTag = bumpSemanticVersion(lastTag, commits)
 
                         echo "Creating new semantic version tag: ${newTag} (previous: ${lastTag ?: 'none'})"
-                        sh "git tag -a ${newTag} -m 'Release ${newTag}'"
-                        sh "git push https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/joan-domingo/jenkins-test.git ${newTag}"
+                        sh "git tag -a \"${newTag}\" -m 'Release ${newTag}'"
+                        sh "git push https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/joan-domingo/jenkins-test.git \"${newTag}\""
 
                         env.PREVIOUS_VERSION_TAG = lastTag
                         env.NEW_VERSION_TAG = newTag
@@ -40,7 +45,7 @@ pipeline {
 }
 
 @NonCPS
-def bumpSemanticVersion(String lastTag) {
+def bumpSemanticVersion(String lastTag, String commits) {
     if (!lastTag) {
         return 'v1.0.0'
     }
@@ -51,11 +56,6 @@ def bumpSemanticVersion(String lastTag) {
     def major = versionMatcher[0][1].toInteger()
     def minor = versionMatcher[0][2].toInteger()
     def patch = versionMatcher[0][3].toInteger()
-
-    def commits = sh(
-        script: "git log ${lastTag}..HEAD --no-merges --pretty=format:'%s%n%b'",
-        returnStdout: true
-    ).trim()
 
     def breakingPattern = Pattern.compile("(?m)^[a-z]+(\\(.+\\))?!:")
     def featPattern = Pattern.compile("(?m)^feat(\\(.+\\))?:")
