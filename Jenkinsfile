@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.9-slim'
-            args '-u root'
-        }
-    }
+    agent any
 
     stages {
         stage('Checkout') {
@@ -15,7 +10,10 @@ pipeline {
 
         stage('Install') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                    sudo apt-get update && sudo apt-get install -y python3 python3-pip
+                    pip3 install -r requirements.txt
+                '''
             }
         }
 
