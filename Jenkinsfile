@@ -44,7 +44,6 @@ pipeline {
     }
 }
 
-// @NonCPS
 def bumpSemanticVersion(String lastTag, String commits) {
     if (!lastTag) {
         return 'v1.0.0'
